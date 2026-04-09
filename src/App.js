@@ -21,6 +21,10 @@ function App() {
 
   useEffect(() => {
     const savedUser = localStorage.getItem('bitsUser');
+    const savedGuidelines = localStorage.getItem('guidelines_accepted');
+    if (savedGuidelines === 'true') {
+      setGuidelinesAccepted(true);
+    }
     if (savedUser) {
       const userData = JSON.parse(savedUser);
       setUser(userData);
@@ -49,6 +53,7 @@ function App() {
 
   const handleGuidelinesAccepted = () => {
     setGuidelinesAccepted(true);
+    localStorage.setItem('guidelines_accepted', 'true');
   };
 
   return (
