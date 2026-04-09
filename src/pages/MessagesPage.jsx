@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 
 const MessagesPage = ({ user }) => {
-  const [conversations, setConversations] = useState([
+  const [selectedConv, setSelectedConv] = useState(null);
+  const [conversations] = useState([
     { id: 1, name: 'Alex Kumar', lastMessage: 'Hey! How are you?', timestamp: '2 mins ago', unread: 2, avatar: '👨‍💻' },
     { id: 2, name: 'Jordan Patel', lastMessage: 'That sounds fun!', timestamp: '1 hour ago', unread: 0, avatar: '🎨' },
     { id: 3, name: 'Casey Singh', lastMessage: 'Let me know when you are free', timestamp: '3 hours ago', unread: 1, avatar: '💼' }
   ]);
 
-  const [selectedConv, setSelectedConv] = useState(null);
-  const [messages, setMessages] = useState({
+  const [messages] = useState({
     1: [
       { id: 1, from: 'Alex Kumar', text: 'Hey! How are you?', time: '2:30 PM', isUser: false },
       { id: 2, from: 'You', text: 'I\'m good! How about you?', time: '2:31 PM', isUser: true },
@@ -30,18 +30,6 @@ const MessagesPage = ({ user }) => {
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
-      const convMessages = messages[selectedConv.id] || [];
-      const newMsg = {
-        id: convMessages.length + 1,
-        from: 'You',
-        text: newMessage,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        isUser: true
-      };
-      setMessages({
-        ...messages,
-        [selectedConv.id]: [...convMessages, newMsg]
-      });
       setNewMessage('');
     }
   };
@@ -50,7 +38,6 @@ const MessagesPage = ({ user }) => {
     const convMessages = messages[selectedConv.id] || [];
     return (
       <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px', minHeight: '100vh' }}>
-        {/* Chat Header */}
         <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '15px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <button onClick={() => setSelectedConv(null)} style={{ background: 'transparent', border: 'none', color: '#6366F1', fontSize: '1.2em', cursor: 'pointer' }}>← Back</button>
           <div style={{ textAlign: 'center' }}>
@@ -60,7 +47,6 @@ const MessagesPage = ({ user }) => {
           <div style={{ width: '30px' }}></div>
         </div>
 
-        {/* Messages */}
         <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '20px', marginBottom: '20px', minHeight: '400px', maxHeight: '500px', overflowY: 'auto' }}>
           {convMessages.map((msg) => (
             <div key={msg.id} style={{ marginBottom: '15px', display: 'flex', justifyContent: msg.isUser ? 'flex-end' : 'flex-start' }}>
@@ -72,7 +58,6 @@ const MessagesPage = ({ user }) => {
           ))}
         </div>
 
-        {/* Message Input */}
         <div style={{ display: 'flex', gap: '10px' }}>
           <input 
             type="text" 
@@ -102,9 +87,7 @@ const MessagesPage = ({ user }) => {
             <div
               key={conv.id}
               onClick={() => setSelectedConv(conv)}
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '15px', marginBottom: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '15px', transition: 'all 0.3s' }}
-              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
+              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '15px', marginBottom: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '15px' }}
             >
               <div style={{ fontSize: '2.5em' }}>{conv.avatar}</div>
               <div style={{ flex: 1 }}>
