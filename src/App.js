@@ -17,7 +17,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [guidelinesAccepted, setGuidelinesAccepted] = useState(localStorage.getItem('guidelines_accepted') === 'true');
+  const [guidelinesAccepted, setGuidelinesAccepted] = useState(false);
 
   useEffect(() => {
     const savedUser = localStorage.getItem('bitsUser');
