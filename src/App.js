@@ -9,7 +9,6 @@ import VibeMatcher from './pages/VibeMatcher';
 import MessagesPage from './pages/MessagesPage';
 import ProfilePage from './pages/ProfilePage';
 import ModerationQueue from './pages/ModerationQueue';
-import CommunityGuidelines from './pages/CommunityGuidelines';
 
 import Navbar from './components/Navbar';
 
@@ -17,14 +16,9 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [guidelinesAccepted, setGuidelinesAccepted] = useState(false);
 
   useEffect(() => {
     const savedUser = localStorage.getItem('bitsUser');
-    const savedGuidelines = localStorage.getItem('guidelines_accepted');
-    if (savedGuidelines === 'true') {
-      setGuidelinesAccepted(true);
-    }
     if (savedUser) {
       const userData = JSON.parse(savedUser);
       setUser(userData);
@@ -51,11 +45,6 @@ function App() {
     localStorage.removeItem('bitsUser');
   };
 
-  const handleGuidelinesAccepted = () => {
-    setGuidelinesAccepted(true);
-    localStorage.setItem('guidelines_accepted', 'true');
-  };
-
   return (
     <Router>
       <div className="app">
@@ -65,11 +54,6 @@ function App() {
             <>
               <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
               <Route path="*" element={<Navigate to="/login" replace />} />
-            </>
-          ) : !guidelinesAccepted ? (
-            <>
-              <Route path="/guidelines" element={<CommunityGuidelines onAgree={handleGuidelinesAccepted} />} />
-              <Route path="*" element={<Navigate to="/guidelines" replace />} />
             </>
           ) : (
             <>
