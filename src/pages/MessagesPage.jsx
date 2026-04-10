@@ -1,4 +1,3 @@
-cat > src/pages/MessagesPage.jsx << 'EOF'
 import React, { useState } from 'react';
 
 const MessagesPage = ({ user }) => {
