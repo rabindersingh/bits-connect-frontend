@@ -52,7 +52,7 @@ function App() {
     setIsAdmin(false);
     setGuidelinesAccepted(false);
     localStorage.removeItem('bitsUser');
-    localStorage.removeItem('guidelines_accepted');
+    // Keep guidelines accepted even after logout
   };
 
   const handleGuidelinesAccepted = () => {
