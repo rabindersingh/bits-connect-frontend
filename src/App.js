@@ -9,6 +9,7 @@ import VibeMatcher from './pages/VibeMatcher';
 import MessagesPage from './pages/MessagesPage';
 import ProfilePage from './pages/ProfilePage';
 import ModerationQueue from './pages/ModerationQueue';
+import AnnouncementsPage from './pages/AnnouncementsPage';
 import CommunityGuidelines from './pages/CommunityGuidelines';
 
 import Navbar from './components/Navbar';
@@ -79,6 +80,7 @@ function App() {
               <Route path="/" element={<HomePage user={user} />} />
               <Route path="/vibe-matcher" element={<VibeMatcher user={user} />} />
               <Route path="/messages" element={<MessagesPage user={user} />} />
+              <Route path="/announcements" element={<AnnouncementsPage user={user} />} />
               <Route path="/profile" element={<ProfilePage user={user} onLogout={handleLogout} />} />
               {isAdmin && (
                 <>

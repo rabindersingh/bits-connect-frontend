@@ -10,6 +10,7 @@ const Navbar = ({ user, onLogout, isAdmin }) => {
         <button onClick={() => navigate('/')} style={styles.logo}>🔥 BITS</button>
         <ul style={styles.navLinks}>
           <li><button onClick={() => navigate('/')} style={styles.navBtn}>Home</button></li>
+          <li><button onClick={() => navigate('/announcements')} style={styles.navBtn}>📢 Announcements</button></li>
           <li><button onClick={() => navigate('/vibe-matcher')} style={styles.navBtn}>Vibe</button></li>
           <li><button onClick={() => navigate('/messages')} style={styles.navBtn}>Messages</button></li>
           <li><button onClick={() => navigate('/profile')} style={styles.navBtn}>Profile</button></li>
