@@ -37,49 +37,49 @@ const MessagesPage = ({ user }) => {
   if (selectedConv) {
     const convMessages = messages[selectedConv.id] || [];
     return (
-      <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px', minHeight: '100vh' }}>
-        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '15px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <button onClick={() => setSelectedConv(null)} style={{ background: 'transparent', border: 'none', color: '#6366F1', fontSize: '1.2em', cursor: 'pointer' }}>← Back</button>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '2em', marginBottom: '5px' }}>{selectedConv.avatar}</div>
-            <h2 style={{ color: '#fff', margin: '0', fontSize: '1.2em' }}>{selectedConv.name}</h2>
+      <div style={{ maxWidth: '600px', margin: '0 auto', padding: '15px', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '12px', marginBottom: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <button onClick={() => setSelectedConv(null)} style={{ background: 'transparent', border: 'none', color: '#6366F1', fontSize: '1.3em', cursor: 'pointer' }}>←</button>
+          <div style={{ textAlign: 'center', flex: 1 }}>
+            <div style={{ fontSize: '2em', marginBottom: '4px' }}>{selectedConv.avatar}</div>
+            <h2 style={{ color: '#fff', margin: '0', fontSize: 'clamp(1em, 4vw, 1.2em)' }}>{selectedConv.name}</h2>
           </div>
-          <div style={{ width: '30px' }}></div>
+          <div style={{ width: '40px' }}></div>
         </div>
 
-        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '20px', marginBottom: '20px', minHeight: '400px', maxHeight: '500px', overflowY: 'auto' }}>
+        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '15px', marginBottom: '15px', minHeight: '300px', maxHeight: '400px', overflowY: 'auto', flex: 1 }}>
           {convMessages.map((msg) => (
-            <div key={msg.id} style={{ marginBottom: '15px', display: 'flex', justifyContent: msg.isUser ? 'flex-end' : 'flex-start' }}>
-              <div style={{ background: msg.isUser ? '#6366F1' : 'rgba(99,102,241,0.2)', color: msg.isUser ? '#fff' : '#CBD5E1', padding: '10px 15px', borderRadius: '12px', maxWidth: '70%', wordWrap: 'break-word' }}>
-                <p style={{ margin: '0 0 5px 0', fontSize: '0.9em' }}>{msg.text}</p>
-                <p style={{ margin: '0', fontSize: '0.75em', opacity: 0.7 }}>{msg.time}</p>
+            <div key={msg.id} style={{ marginBottom: '12px', display: 'flex', justifyContent: msg.isUser ? 'flex-end' : 'flex-start' }}>
+              <div style={{ background: msg.isUser ? '#6366F1' : 'rgba(99,102,241,0.2)', color: msg.isUser ? '#fff' : '#CBD5E1', padding: '10px 12px', borderRadius: '10px', maxWidth: '80%', wordWrap: 'break-word' }}>
+                <p style={{ margin: '0 0 4px 0', fontSize: 'clamp(0.85em, 3vw, 0.95em)' }}>{msg.text}</p>
+                <p style={{ margin: '0', fontSize: '0.7em', opacity: 0.7 }}>{msg.time}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div style={{ display: 'flex', gap: '8px' }}>
           <input 
             type="text" 
-            placeholder="Type a message..." 
+            placeholder="Message..." 
             value={newMessage} 
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-            style={{ flex: 1, padding: '12px 15px', background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(99,102,241,0.15)', borderRadius: '8px', color: '#fff', fontFamily: 'Poppins' }}
+            style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(99,102,241,0.15)', borderRadius: '8px', color: '#fff', fontFamily: 'Poppins', fontSize: 'clamp(0.9em, 3vw, 1em)' }}
           />
-          <button onClick={handleSendMessage} style={{ background: '#6366F1', color: '#fff', border: 'none', padding: '12px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>Send</button>
+          <button onClick={handleSendMessage} style={{ background: '#6366F1', color: '#fff', border: 'none', padding: '10px 15px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: 'clamp(0.85em, 3vw, 0.95em)' }}>Send</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
-      <h1 style={{ color: '#6366F1', textAlign: 'center', marginBottom: '30px' }}>💬 Messages</h1>
+    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '15px' }}>
+      <h1 style={{ color: '#6366F1', textAlign: 'center', marginBottom: '20px', fontSize: 'clamp(1.5em, 5vw, 2em)' }}>💬 Messages</h1>
 
       {conversations.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '40px', color: '#CBD5E1' }}>
-          <p>No conversations yet. Match with someone to start chatting!</p>
+        <div style={{ textAlign: 'center', padding: '30px', color: '#CBD5E1' }}>
+          <p style={{ fontSize: 'clamp(0.9em, 3vw, 1em)' }}>No conversations yet!</p>
         </div>
       ) : (
         <div>
@@ -87,17 +87,17 @@ const MessagesPage = ({ user }) => {
             <div
               key={conv.id}
               onClick={() => setSelectedConv(conv)}
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '15px', marginBottom: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '15px' }}
+              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '12px', marginBottom: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}
             >
-              <div style={{ fontSize: '2.5em' }}>{conv.avatar}</div>
-              <div style={{ flex: 1 }}>
-                <h3 style={{ color: '#fff', margin: '0 0 5px 0' }}>{conv.name}</h3>
-                <p style={{ color: '#CBD5E1', margin: '0', fontSize: '0.9em' }}>{conv.lastMessage}</p>
+              <div style={{ fontSize: '2em' }}>{conv.avatar}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h3 style={{ color: '#fff', margin: '0 0 4px 0', fontSize: 'clamp(0.95em, 3vw, 1.1em)' }}>{conv.name}</h3>
+                <p style={{ color: '#CBD5E1', margin: '0', fontSize: 'clamp(0.8em, 3vw, 0.9em)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{conv.lastMessage}</p>
               </div>
-              <div style={{ textAlign: 'right' }}>
-                <p style={{ color: '#94A3B8', fontSize: '0.85em', margin: '0 0 8px 0' }}>{conv.timestamp}</p>
+              <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                <p style={{ color: '#94A3B8', fontSize: '0.75em', margin: '0 0 6px 0' }}>{conv.timestamp}</p>
                 {conv.unread > 0 && (
-                  <div style={{ background: '#6366F1', color: '#fff', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85em', fontWeight: '600' }}>
+                  <div style={{ background: '#6366F1', color: '#fff', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75em', fontWeight: '600' }}>
                     {conv.unread}
                   </div>
                 )}
