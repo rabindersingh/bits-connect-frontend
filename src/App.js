@@ -9,6 +9,7 @@ import VibeMatcher from './pages/VibeMatcher';
 import MessagesPage from './pages/MessagesPage';
 import ProfilePage from './pages/ProfilePage';
 import ModerationQueue from './pages/ModerationQueue';
+import CommunityGuidelines from './pages/CommunityGuidelines';
 
 import Navbar from './components/Navbar';
 
@@ -16,9 +17,14 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [guidelinesAccepted, setGuidelinesAccepted] = useState(localStorage.getItem('guidelines_accepted') === 'true');
 
   useEffect(() => {
     const savedUser = localStorage.getItem('bitsUser');
+    const savedGuidelines = localStorage.getItem('guidelines_accepted');
+    if (savedGuidelines === 'true') {
+      setGuidelinesAccepted(true);
+    }
     if (savedUser) {
       const userData = JSON.parse(savedUser);
       setUser(userData);
@@ -33,6 +39,7 @@ function App() {
     setUser(userData);
     setIsLoggedIn(true);
     localStorage.setItem('bitsUser', JSON.stringify(userData));
+    setGuidelinesAccepted(false);
     if (userData.email === 'admin@bits.edu') {
       setIsAdmin(true);
     }
@@ -42,18 +49,30 @@ function App() {
     setUser(null);
     setIsLoggedIn(false);
     setIsAdmin(false);
+    setGuidelinesAccepted(false);
     localStorage.removeItem('bitsUser');
+    localStorage.removeItem('guidelines_accepted');
+  };
+
+  const handleGuidelinesAccepted = () => {
+    setGuidelinesAccepted(true);
+    localStorage.setItem('guidelines_accepted', 'true');
   };
 
   return (
     <Router>
       <div className="app">
-        {isLoggedIn && <Navbar user={user} onLogout={handleLogout} isAdmin={isAdmin} />}
+        {isLoggedIn && guidelinesAccepted && <Navbar user={user} onLogout={handleLogout} isAdmin={isAdmin} />}
         <Routes>
           {!isLoggedIn ? (
             <>
               <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
               <Route path="*" element={<Navigate to="/login" replace />} />
+            </>
+          ) : !guidelinesAccepted ? (
+            <>
+              <Route path="/guidelines" element={<CommunityGuidelines onAgree={handleGuidelinesAccepted} />} />
+              <Route path="*" element={<Navigate to="/guidelines" replace />} />
             </>
           ) : (
             <>
