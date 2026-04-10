@@ -58,16 +58,16 @@ const MessagesPage = ({ user }) => {
           ))}
         </div>
 
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '10px', alignItems: 'flex-end' }}>
           <input 
             type="text" 
             placeholder="Type message..." 
             value={newMessage} 
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-            style={{ flex: 1, padding: '12px 15px', background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(99,102,241,0.15)', borderRadius: '8px', color: '#fff', fontFamily: 'Poppins', fontSize: 'clamp(0.9em, 3vw, 1em)', minHeight: '45px' }}
+            style={{ padding: '14px', background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(99,102,241,0.15)', borderRadius: '8px', color: '#fff', fontFamily: 'Poppins', fontSize: 'clamp(0.95em, 3vw, 1em)', width: '100%', boxSizing: 'border-box', minHeight: '50px' }}
           />
-          <button onClick={handleSendMessage} style={{ background: '#6366F1', color: '#fff', border: 'none', padding: '12px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: 'clamp(0.85em, 3vw, 0.95em)', whiteSpace: 'nowrap' }}>Send</button>
+          <button onClick={handleSendMessage} style={{ background: '#6366F1', color: '#fff', border: 'none', padding: '14px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: 'clamp(0.85em, 3vw, 0.95em)', whiteSpace: 'nowrap' }}>Send</button>
         </div>
       </div>
     );
