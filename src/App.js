@@ -40,7 +40,6 @@ function App() {
     setUser(userData);
     setIsLoggedIn(true);
     localStorage.setItem('bitsUser', JSON.stringify(userData));
-    setGuidelinesAccepted(false);
     if (userData.email === 'admin@bits.edu') {
       setIsAdmin(true);
     }
@@ -50,7 +49,6 @@ function App() {
     setUser(null);
     setIsLoggedIn(false);
     setIsAdmin(false);
-    setGuidelinesAccepted(false);
     localStorage.removeItem('bitsUser');
     // Keep guidelines accepted even after logout
   };
