@@ -38,6 +38,7 @@ const MessagesPage = ({ user }) => {
     const convMessages = messages[selectedConv.id] || [];
     return (
       <div style={{ maxWidth: '100%', margin: '0', padding: '15px', minHeight: '100vh', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+        {/* Header */}
         <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '12px', marginBottom: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <button onClick={() => setSelectedConv(null)} style={{ background: 'transparent', border: 'none', color: '#6366F1', fontSize: '1.5em', cursor: 'pointer', padding: '5px' }}>←</button>
           <div style={{ textAlign: 'center', flex: 1 }}>
@@ -47,6 +48,7 @@ const MessagesPage = ({ user }) => {
           <div style={{ width: '40px' }}></div>
         </div>
 
+        {/* Messages Area */}
         <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '15px', marginBottom: '15px', minHeight: '250px', maxHeight: '350px', overflowY: 'auto', flex: 1 }}>
           {convMessages.map((msg) => (
             <div key={msg.id} style={{ marginBottom: '12px', display: 'flex', justifyContent: msg.isUser ? 'flex-end' : 'flex-start' }}>
@@ -58,6 +60,7 @@ const MessagesPage = ({ user }) => {
           ))}
         </div>
 
+        {/* Input Area - FIXED */}
         <div style={{ display: 'flex', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
           <input 
             type="text" 
@@ -65,9 +68,36 @@ const MessagesPage = ({ user }) => {
             value={newMessage} 
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-            style={{ flex: 1, padding: '12px', background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(99,102,241,0.15)', borderRadius: '8px', color: '#fff', fontFamily: 'Poppins', fontSize: '1em', boxSizing: 'border-box' }}
+            style={{ 
+              flex: 1, 
+              padding: '12px 14px', 
+              background: 'rgba(255,255,255,0.05)', 
+              border: '2px solid rgba(99,102,241,0.15)', 
+              borderRadius: '8px', 
+              color: '#fff', 
+              fontFamily: 'Poppins', 
+              fontSize: '1em',
+              boxSizing: 'border-box',
+              minHeight: '45px'
+            }}
           />
-          <button onClick={handleSendMessage} style={{ background: '#6366F1', color: '#fff', border: 'none', padding: '12px 14px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '0.9em' }}>Send</button>
+          <button 
+            onClick={handleSendMessage} 
+            style={{ 
+              background: '#6366F1', 
+              color: '#fff', 
+              border: 'none', 
+              padding: '12px 16px', 
+              borderRadius: '8px', 
+              cursor: 'pointer', 
+              fontWeight: '600', 
+              fontSize: '0.9em',
+              whiteSpace: 'nowrap',
+              flexShrink: 0
+            }}
+          >
+            Send
+          </button>
         </div>
       </div>
     );
