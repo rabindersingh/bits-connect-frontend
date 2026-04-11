@@ -50,8 +50,10 @@ const MessagesPage = ({ user }) => {
         <div className="messages-area">
           {convMessages.map((msg) => (
             <div key={msg.id} className={msg.isUser ? 'msg msg-user' : 'msg msg-other'}>
-              <p className="msg-text">{msg.text}</p>
-              <p className="msg-time">{msg.time}</p>
+              <div>
+                <p className="msg-text">{msg.text}</p>
+                <p className="msg-time">{msg.time}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -97,6 +99,7 @@ const MessagesPage = ({ user }) => {
             font-size: 1.5em;
             cursor: pointer;
             padding: 5px;
+            flex-shrink: 0;
           }
           
           .header-info {
@@ -136,16 +139,8 @@ const MessagesPage = ({ user }) => {
             justify-content: flex-end;
           }
           
-          .msg-user > div {
-            background: #6366F1;
-          }
-          
           .msg-other {
             justify-content: flex-start;
-          }
-          
-          .msg-other > div {
-            background: rgba(99,102,241,0.2);
           }
           
           .msg > div {
@@ -154,6 +149,15 @@ const MessagesPage = ({ user }) => {
             border-radius: 10px;
             max-width: 75%;
             word-wrap: break-word;
+          }
+          
+          .msg-user > div {
+            background: #6366F1;
+          }
+          
+          .msg-other > div {
+            background: rgba(99,102,241,0.2);
+            color: #CBD5E1;
           }
           
           .msg-text {
@@ -168,36 +172,59 @@ const MessagesPage = ({ user }) => {
           }
           
           .input-wrapper {
-            display: flex;
-            gap: 8px;
-            width: 100%;
-            box-sizing: border-box;
+            display: flex !important;
+            gap: 8px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            padding: 0 !important;
+            margin: 0 !important;
           }
           
           .message-input {
-            flex: 1;
-            padding: 12px;
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(99,102,241,0.15);
-            border-radius: 8px;
-            color: #fff;
-            font-family: Poppins;
-            font-size: 1em;
-            box-sizing: border-box;
-            min-height: 45px;
+            flex: 1 !important;
+            padding: 12px !important;
+            background: rgba(255,255,255,0.05) !important;
+            border: 2px solid rgba(99,102,241,0.15) !important;
+            border-radius: 8px !important;
+            color: #fff !important;
+            font-family: Poppins !important;
+            font-size: 1em !important;
+            box-sizing: border-box !important;
+            min-height: 45px !important;
+            width: auto !important;
           }
           
           .send-btn {
-            background: #6366F1;
-            color: #fff;
-            border: none;
-            padding: 12px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9em;
-            white-space: nowrap;
-            flex-shrink: 0;
+            background: #6366F1 !important;
+            color: #fff !important;
+            border: none !important;
+            padding: 12px 14px !important;
+            border-radius: 8px !important;
+            cursor: pointer !important;
+            font-weight: 600 !important;
+            font-size: 0.9em !important;
+            white-space: nowrap !important;
+            flex-shrink: 0 !important;
+            height: 45px !important;
+            min-width: 60px !important;
+          }
+          
+          @media (max-width: 768px) {
+            .input-wrapper {
+              display: flex !important;
+              gap: 8px !important;
+            }
+            
+            .message-input {
+              flex: 1 !important;
+              min-width: 0 !important;
+            }
+            
+            .send-btn {
+              min-width: 55px !important;
+              padding: 10px 12px !important;
+              font-size: 0.85em !important;
+            }
           }
         `}</style>
       </div>
