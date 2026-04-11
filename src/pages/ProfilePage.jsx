@@ -46,7 +46,7 @@ const ProfilePage = ({ user, onLogout }) => {
 
   if (isEditing) {
     return (
-      <div style={{ maxWidth: '600px', margin: '0 auto', padding: '15px' }}>
+      <div style={{ maxWidth: '100%', margin: '0', padding: '15px', boxSizing: 'border-box' }}>
         <h1 style={{ color: '#6366F1', textAlign: 'center', marginBottom: '20px', fontSize: 'clamp(1.5em, 5vw, 2em)' }}>✏️ Edit</h1>
 
         <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '15px', marginBottom: '15px' }}>
@@ -57,7 +57,7 @@ const ProfilePage = ({ user, onLogout }) => {
               type="text"
               value={editData.name}
               onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-              style={{ width: '100%', padding: '10px', background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(99,102,241,0.15)', borderRadius: '8px', color: '#fff', fontFamily: 'Poppins', boxSizing: 'border-box' }}
+              style={{ width: '100%', padding: '10px', background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(99,102,241,0.15)', borderRadius: '8px', color: '#fff', fontFamily: 'Poppins', boxSizing: 'border-box', fontSize: '1em' }}
             />
           </div>
 
@@ -67,7 +67,7 @@ const ProfilePage = ({ user, onLogout }) => {
               type="number"
               value={editData.age}
               onChange={(e) => setEditData({ ...editData, age: parseInt(e.target.value) })}
-              style={{ width: '100%', padding: '10px', background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(99,102,241,0.15)', borderRadius: '8px', color: '#fff', fontFamily: 'Poppins', boxSizing: 'border-box' }}
+              style={{ width: '100%', padding: '10px', background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(99,102,241,0.15)', borderRadius: '8px', color: '#fff', fontFamily: 'Poppins', boxSizing: 'border-box', fontSize: '1em' }}
             />
           </div>
 
@@ -76,7 +76,7 @@ const ProfilePage = ({ user, onLogout }) => {
             <select
               value={editData.year}
               onChange={(e) => setEditData({ ...editData, year: e.target.value })}
-              style={{ width: '100%', padding: '10px', background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(99,102,241,0.15)', borderRadius: '8px', color: '#fff', fontFamily: 'Poppins', boxSizing: 'border-box' }}
+              style={{ width: '100%', padding: '10px', background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(99,102,241,0.15)', borderRadius: '8px', color: '#fff', fontFamily: 'Poppins', boxSizing: 'border-box', fontSize: '1em' }}
             >
               <option>1st Year</option>
               <option>2nd Year</option>
@@ -90,7 +90,7 @@ const ProfilePage = ({ user, onLogout }) => {
             <select
               value={editData.department}
               onChange={(e) => setEditData({ ...editData, department: e.target.value })}
-              style={{ width: '100%', padding: '10px', background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(99,102,241,0.15)', borderRadius: '8px', color: '#fff', fontFamily: 'Poppins', boxSizing: 'border-box' }}
+              style={{ width: '100%', padding: '10px', background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(99,102,241,0.15)', borderRadius: '8px', color: '#fff', fontFamily: 'Poppins', boxSizing: 'border-box', fontSize: '1em' }}
             >
               <option>Computer Science</option>
               <option>Design</option>
@@ -105,7 +105,7 @@ const ProfilePage = ({ user, onLogout }) => {
             <textarea
               value={editData.bio}
               onChange={(e) => setEditData({ ...editData, bio: e.target.value })}
-              style={{ width: '100%', padding: '10px', background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(99,102,241,0.15)', borderRadius: '8px', color: '#fff', fontFamily: 'Poppins', boxSizing: 'border-box', minHeight: '80px' }}
+              style={{ width: '100%', padding: '10px', background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(99,102,241,0.15)', borderRadius: '8px', color: '#fff', fontFamily: 'Poppins', boxSizing: 'border-box', minHeight: '80px', fontSize: '1em' }}
               placeholder="Tell us about yourself..."
             />
           </div>
@@ -119,9 +119,9 @@ const ProfilePage = ({ user, onLogout }) => {
                 onChange={(e) => setNewInterest(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleAddInterest()}
                 placeholder="Add..."
-                style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(99,102,241,0.15)', borderRadius: '8px', color: '#fff', fontFamily: 'Poppins', minWidth: '150px', boxSizing: 'border-box' }}
+                style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(99,102,241,0.15)', borderRadius: '8px', color: '#fff', fontFamily: 'Poppins', minWidth: '150px', boxSizing: 'border-box', fontSize: '1em' }}
               />
-              <button onClick={handleAddInterest} style={{ background: '#6366F1', color: '#fff', border: 'none', padding: '10px 15px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: 'clamp(0.85em, 3vw, 0.95em)' }}>Add</button>
+              <button onClick={handleAddInterest} style={{ background: '#6366F1', color: '#fff', border: 'none', padding: '10px 15px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: 'clamp(0.85em, 3vw, 0.95em)', whiteSpace: 'nowrap' }}>Add</button>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
               {editData.interests.map((interest, idx) => (
@@ -133,9 +133,9 @@ const ProfilePage = ({ user, onLogout }) => {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button onClick={handleSave} style={{ flex: 1, background: '#6366F1', color: '#fff', border: 'none', padding: '12px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: 'clamp(0.9em, 3vw, 1em)' }}>Save</button>
-            <button onClick={() => setIsEditing(false)} style={{ flex: 1, background: 'transparent', border: '2px solid #94A3B8', color: '#94A3B8', padding: '12px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: 'clamp(0.9em, 3vw, 1em)' }}>Cancel</button>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <button onClick={handleSave} style={{ flex: 1, minWidth: '120px', background: '#6366F1', color: '#fff', border: 'none', padding: '12px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: 'clamp(0.9em, 3vw, 1em)' }}>Save</button>
+            <button onClick={() => setIsEditing(false)} style={{ flex: 1, minWidth: '120px', background: 'transparent', border: '2px solid #94A3B8', color: '#94A3B8', padding: '12px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: 'clamp(0.9em, 3vw, 1em)' }}>Cancel</button>
           </div>
         </div>
       </div>
@@ -143,7 +143,7 @@ const ProfilePage = ({ user, onLogout }) => {
   }
 
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '15px' }}>
+    <div style={{ maxWidth: '100%', margin: '0', padding: '15px', boxSizing: 'border-box' }}>
       <h1 style={{ color: '#6366F1', textAlign: 'center', marginBottom: '20px', fontSize: 'clamp(1.5em, 5vw, 2em)' }}>👤 Profile</h1>
 
       <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '20px', textAlign: 'center', marginBottom: '15px' }}>
@@ -162,8 +162,8 @@ const ProfilePage = ({ user, onLogout }) => {
         </div>
 
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-          <button onClick={() => setIsEditing(true)} style={{ flex: 1, minWidth: '120px', background: '#6366F1', color: '#fff', border: 'none', padding: '10px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: 'clamp(0.85em, 3vw, 0.95em)' }}>✏️ Edit</button>
-          <button onClick={handleLogout} style={{ flex: 1, minWidth: '120px', background: '#F43F5E', color: '#fff', border: 'none', padding: '10px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: 'clamp(0.85em, 3vw, 0.95em)' }}>Logout</button>
+          <button onClick={() => setIsEditing(true)} style={{ flex: 1, minWidth: '120px', background: '#6366F1', color: '#fff', border: 'none', padding: '12px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: 'clamp(0.85em, 3vw, 0.95em)' }}>✏️ Edit</button>
+          <button onClick={handleLogout} style={{ flex: 1, minWidth: '120px', background: '#F43F5E', color: '#fff', border: 'none', padding: '12px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: 'clamp(0.85em, 3vw, 0.95em)' }}>Logout</button>
         </div>
       </div>
 
