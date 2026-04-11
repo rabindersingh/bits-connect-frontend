@@ -37,196 +37,66 @@ const MessagesPage = ({ user }) => {
   if (selectedConv) {
     const convMessages = messages[selectedConv.id] || [];
     return (
-      <div className="message-container">
-        <div className="message-header">
-          <button onClick={() => setSelectedConv(null)} className="back-btn">←</button>
-          <div className="header-info">
-            <div className="avatar">{selectedConv.avatar}</div>
-            <h2 className="header-name">{selectedConv.name}</h2>
+      <div style={{ maxWidth: '100%', margin: '0', padding: '15px', minHeight: '100vh', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '12px', marginBottom: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <button onClick={() => setSelectedConv(null)} style={{ background: 'transparent', border: 'none', color: '#6366F1', fontSize: '1.5em', cursor: 'pointer', padding: '5px' }}>←</button>
+          <div style={{ textAlign: 'center', flex: 1 }}>
+            <div style={{ fontSize: '2em', marginBottom: '4px' }}>{selectedConv.avatar}</div>
+            <h2 style={{ color: '#fff', margin: '0', fontSize: 'clamp(0.9em, 4vw, 1.1em)' }}>{selectedConv.name}</h2>
           </div>
           <div style={{ width: '40px' }}></div>
         </div>
 
-        <div className="messages-area">
+        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '15px', marginBottom: '15px', minHeight: '250px', maxHeight: '350px', overflowY: 'auto', flex: 1 }}>
           {convMessages.map((msg) => (
-            <div key={msg.id} className={msg.isUser ? 'msg msg-user' : 'msg msg-other'}>
-              <div>
-                <p className="msg-text">{msg.text}</p>
-                <p className="msg-time">{msg.time}</p>
+            <div key={msg.id} style={{ marginBottom: '12px', display: 'flex', justifyContent: msg.isUser ? 'flex-end' : 'flex-start' }}>
+              <div style={{ background: msg.isUser ? '#6366F1' : 'rgba(99,102,241,0.2)', color: msg.isUser ? '#fff' : '#CBD5E1', padding: '10px 12px', borderRadius: '10px', maxWidth: '75%', wordWrap: 'break-word' }}>
+                <p style={{ margin: '0 0 4px 0', fontSize: 'clamp(0.8em, 3vw, 0.9em)' }}>{msg.text}</p>
+                <p style={{ margin: '0', fontSize: '0.65em', opacity: 0.7 }}>{msg.time}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="input-wrapper">
+        <div style={{ display: 'flex', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
           <input 
             type="text" 
-            className="message-input"
-            placeholder="Type message..." 
+            placeholder="Message..." 
             value={newMessage} 
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+            style={{ 
+              width: 'calc(100% - 70px)',
+              padding: '12px', 
+              background: 'rgba(255,255,255,0.05)', 
+              border: '2px solid rgba(99,102,241,0.15)', 
+              borderRadius: '8px', 
+              color: '#fff', 
+              fontFamily: 'Poppins', 
+              fontSize: '1em',
+              boxSizing: 'border-box'
+            }}
           />
-          <button onClick={handleSendMessage} className="send-btn">Send</button>
+          <button 
+            onClick={handleSendMessage} 
+            style={{ 
+              width: '62px',
+              background: '#6366F1', 
+              color: '#fff', 
+              border: 'none', 
+              padding: '12px', 
+              borderRadius: '8px', 
+              cursor: 'pointer', 
+              fontWeight: '600', 
+              fontSize: '0.9em',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+              boxSizing: 'border-box'
+            }}
+          >
+            Send
+          </button>
         </div>
-
-        <style>{`
-          .message-container {
-            max-width: 100%;
-            margin: 0;
-            padding: 15px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            box-sizing: border-box;
-          }
-          
-          .message-header {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(99,102,241,0.15);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-          }
-          
-          .back-btn {
-            background: transparent;
-            border: none;
-            color: #6366F1;
-            font-size: 1.5em;
-            cursor: pointer;
-            padding: 5px;
-            flex-shrink: 0;
-          }
-          
-          .header-info {
-            text-align: center;
-            flex: 1;
-          }
-          
-          .avatar {
-            font-size: 2em;
-            margin-bottom: 4px;
-          }
-          
-          .header-name {
-            color: #fff;
-            margin: 0;
-            font-size: clamp(0.9em, 4vw, 1.1em);
-          }
-          
-          .messages-area {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(99,102,241,0.15);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            min-height: 250px;
-            max-height: 350px;
-            overflow-y: auto;
-            flex: 1;
-          }
-          
-          .msg {
-            margin-bottom: 12px;
-            display: flex;
-          }
-          
-          .msg-user {
-            justify-content: flex-end;
-          }
-          
-          .msg-other {
-            justify-content: flex-start;
-          }
-          
-          .msg > div {
-            color: #fff;
-            padding: 10px 12px;
-            border-radius: 10px;
-            max-width: 75%;
-            word-wrap: break-word;
-          }
-          
-          .msg-user > div {
-            background: #6366F1;
-          }
-          
-          .msg-other > div {
-            background: rgba(99,102,241,0.2);
-            color: #CBD5E1;
-          }
-          
-          .msg-text {
-            margin: 0 0 4px 0;
-            font-size: clamp(0.8em, 3vw, 0.9em);
-          }
-          
-          .msg-time {
-            margin: 0;
-            font-size: 0.65em;
-            opacity: 0.7;
-          }
-          
-          .input-wrapper {
-            display: flex !important;
-            gap: 8px !important;
-            width: 100% !important;
-            box-sizing: border-box !important;
-            padding: 0 !important;
-            margin: 0 !important;
-          }
-          
-          .message-input {
-            flex: 1 !important;
-            padding: 12px !important;
-            background: rgba(255,255,255,0.05) !important;
-            border: 2px solid rgba(99,102,241,0.15) !important;
-            border-radius: 8px !important;
-            color: #fff !important;
-            font-family: Poppins !important;
-            font-size: 1em !important;
-            box-sizing: border-box !important;
-            min-height: 45px !important;
-            width: auto !important;
-          }
-          
-          .send-btn {
-            background: #6366F1 !important;
-            color: #fff !important;
-            border: none !important;
-            padding: 12px 14px !important;
-            border-radius: 8px !important;
-            cursor: pointer !important;
-            font-weight: 600 !important;
-            font-size: 0.9em !important;
-            white-space: nowrap !important;
-            flex-shrink: 0 !important;
-            height: 45px !important;
-            min-width: 60px !important;
-          }
-          
-          @media (max-width: 768px) {
-            .input-wrapper {
-              display: flex !important;
-              gap: 8px !important;
-            }
-            
-            .message-input {
-              flex: 1 !important;
-              min-width: 0 !important;
-            }
-            
-            .send-btn {
-              min-width: 55px !important;
-              padding: 10px 12px !important;
-              font-size: 0.85em !important;
-            }
-          }
-        `}</style>
       </div>
     );
   }
