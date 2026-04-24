@@ -9,6 +9,7 @@ import VibeMatcher from './pages/VibeMatcher';
 import MessagesPage from './pages/MessagesPage';
 import ProfilePage from './pages/ProfilePage';
 import ModerationQueue from './pages/ModerationQueue';
+import AdminAnnouncements from './pages/AdminAnnouncements';
 import AnnouncementsPage from './pages/AnnouncementsPage';
 import AnnouncementsSubmit from './pages/AnnouncementsSubmit';
 import CommunityGuidelines from './pages/CommunityGuidelines';
@@ -85,6 +86,7 @@ function App() {
                 <>
                   <Route path="/admin" element={<AdminDashboard />} />
                   <Route path="/moderation" element={<ModerationQueue />} />
+                  <Route path="/admin/announcements" element={<AdminAnnouncements />} />
                 </>
               )}
               <Route path="*" element={<Navigate to="/" replace />} />
