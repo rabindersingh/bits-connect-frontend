@@ -1,43 +1,126 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const MessagesPage = ({ user }) => {
   const [selectedConv, setSelectedConv] = useState(null);
-  const [conversations] = useState([
-    { id: 1, name: 'Alex Kumar', lastMessage: 'Hey! How are you?', timestamp: '2 mins ago', unread: 2, avatar: '👨‍💻' },
-    { id: 2, name: 'Jordan Patel', lastMessage: 'That sounds fun!', timestamp: '1 hour ago', unread: 0, avatar: '🎨' },
-    { id: 3, name: 'Casey Singh', lastMessage: 'Let me know when you are free', timestamp: '3 hours ago', unread: 1, avatar: '💼' }
+  const [conversations, setConversations] = useState([
+    { id: 1, name: 'Alex Kumar', avatar: '👨‍💻', userId: 1 },
+    { id: 2, name: 'Jordan Patel', avatar: '🎨', userId: 2 },
+    { id: 3, name: 'Casey Singh', avatar: '💼', userId: 3 }
   ]);
 
-  const [messages] = useState({
-    1: [
-      { id: 1, from: 'Alex Kumar', text: 'Hey! How are you?', time: '2:30 PM', isUser: false },
-      { id: 2, from: 'You', text: 'I\'m good! How about you?', time: '2:31 PM', isUser: true },
-      { id: 3, from: 'Alex Kumar', text: 'Great! Wanna grab coffee?', time: '2:32 PM', isUser: false }
-    ],
-    2: [
-      { id: 1, from: 'Jordan Patel', text: 'Did you watch the new movie?', time: '1:15 PM', isUser: false },
-      { id: 2, from: 'You', text: 'Not yet! Is it good?', time: '1:16 PM', isUser: true },
-      { id: 3, from: 'Jordan Patel', text: 'That sounds fun!', time: '1:20 PM', isUser: false }
-    ],
-    3: [
-      { id: 1, from: 'Casey Singh', text: 'Wanna study together?', time: '10:00 AM', isUser: false },
-      { id: 2, from: 'You', text: 'Sure! When?', time: '10:05 AM', isUser: true },
-      { id: 3, from: 'Casey Singh', text: 'Let me know when you are free', time: '10:10 AM', isUser: false }
-    ]
-  });
-
+  const [messages, setMessages] = useState({});
   const [newMessage, setNewMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      setNewMessage('');
+  const validEmojis = ['❤️', '👍', '😊', '😢', '😠', '🎉', '😴', '🤔', '🎊', '📚', '🍕', '💪'];
+
+  // Fetch messages when conversation is selected
+  useEffect(() => {
+    if (selectedConv) {
+      fetchMessages(selectedConv.userId);
+    }
+  }, [selectedConv]);
+
+  const fetchMessages = async (receiverId) => {
+    setLoading(true);
+    try {
+      const senderId = 1; // Mock user ID (in real app, get from auth)
+      const response = await fetch(`https://bits-connect-backend-production.up.railway.app/api/messages/${senderId}/${receiverId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setMessages({
+          ...messages,
+          [receiverId]: data.messages.map(msg => ({
+            id: msg.id,
+            from: msg.sender_id === senderId ? 'You' : selectedConv.name,
+            text: msg.text,
+            time: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            isUser: msg.sender_id === senderId,
+            emoji: msg.emoji_reaction
+          }))
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    }
+    setLoading(false);
+  };
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || !selectedConv) return;
+
+    try {
+      const senderId = 1; // Mock user ID
+      const receiverId = selectedConv.userId;
+      
+      const response = await fetch('https://bits-connect-backend-production.up.railway.app/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sender_id: senderId,
+          receiver_id: receiverId,
+          text: newMessage
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // Add message to state
+        const convMessages = messages[receiverId] || [];
+        setMessages({
+          ...messages,
+          [receiverId]: [...convMessages, {
+            id: data.message.id,
+            from: 'You',
+            text: newMessage,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            isUser: true,
+            emoji: null
+          }]
+        });
+        setNewMessage('');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      alert('Failed to send message');
+    }
+  };
+
+  const handleEmojiReaction = async (messageId, emoji) => {
+    if (!selectedConv) return;
+
+    try {
+      const response = await fetch(`https://bits-connect-backend-production.up.railway.app/api/messages/${messageId}/emoji`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ emoji })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // Update message with emoji
+        const receiverId = selectedConv.userId;
+        const updatedMessages = messages[receiverId].map(msg => 
+          msg.id === messageId ? { ...msg, emoji } : msg
+        );
+        setMessages({
+          ...messages,
+          [receiverId]: updatedMessages
+        });
+      }
+    } catch (error) {
+      console.error('Error adding emoji:', error);
     }
   };
 
   if (selectedConv) {
-    const convMessages = messages[selectedConv.id] || [];
+    const convMessages = messages[selectedConv.userId] || [];
     return (
       <div style={{ maxWidth: '100%', margin: '0', padding: '15px', minHeight: '100vh', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+        {/* Header */}
         <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '12px', marginBottom: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <button onClick={() => setSelectedConv(null)} style={{ background: 'transparent', border: 'none', color: '#6366F1', fontSize: '1.5em', cursor: 'pointer', padding: '5px' }}>←</button>
           <div style={{ textAlign: 'center', flex: 1 }}>
@@ -47,17 +130,49 @@ const MessagesPage = ({ user }) => {
           <div style={{ width: '40px' }}></div>
         </div>
 
+        {/* Messages Area */}
         <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '15px', marginBottom: '15px', minHeight: '250px', maxHeight: '350px', overflowY: 'auto', flex: 1 }}>
-          {convMessages.map((msg) => (
-            <div key={msg.id} style={{ marginBottom: '12px', display: 'flex', justifyContent: msg.isUser ? 'flex-end' : 'flex-start' }}>
-              <div style={{ background: msg.isUser ? '#6366F1' : 'rgba(99,102,241,0.2)', color: msg.isUser ? '#fff' : '#CBD5E1', padding: '10px 12px', borderRadius: '10px', maxWidth: '75%', wordWrap: 'break-word' }}>
-                <p style={{ margin: '0 0 4px 0', fontSize: 'clamp(0.8em, 3vw, 0.9em)' }}>{msg.text}</p>
-                <p style={{ margin: '0', fontSize: '0.65em', opacity: 0.7 }}>{msg.time}</p>
+          {loading ? (
+            <p style={{ color: '#CBD5E1', textAlign: 'center' }}>Loading messages...</p>
+          ) : convMessages.length === 0 ? (
+            <p style={{ color: '#CBD5E1', textAlign: 'center' }}>No messages yet. Start the conversation!</p>
+          ) : (
+            convMessages.map((msg) => (
+              <div key={msg.id} style={{ marginBottom: '12px', display: 'flex', justifyContent: msg.isUser ? 'flex-end' : 'flex-start' }}>
+                <div style={{ background: msg.isUser ? '#6366F1' : 'rgba(99,102,241,0.2)', color: msg.isUser ? '#fff' : '#CBD5E1', padding: '10px 12px', borderRadius: '10px', maxWidth: '75%', wordWrap: 'break-word' }}>
+                  <p style={{ margin: '0 0 4px 0', fontSize: 'clamp(0.8em, 3vw, 0.9em)' }}>{msg.text}</p>
+                  <p style={{ margin: '0 0 8px 0', fontSize: '0.65em', opacity: 0.7 }}>{msg.time}</p>
+                  
+                  {/* Emoji reactions */}
+                  <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                    {validEmojis.map(emoji => (
+                      <button
+                        key={emoji}
+                        onClick={() => handleEmojiReaction(msg.id, emoji)}
+                        style={{
+                          background: msg.emoji === emoji ? 'rgba(255,255,255,0.3)' : 'transparent',
+                          border: '1px solid rgba(255,255,255,0.2)',
+                          color: '#fff',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '0.9em',
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  {msg.emoji && <p style={{ margin: '4px 0 0 0', fontSize: '0.85em' }}>Reacted: {msg.emoji}</p>}
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
+        {/* Input Area */}
         <div style={{ display: 'flex', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
           <input 
             type="text" 
@@ -120,15 +235,7 @@ const MessagesPage = ({ user }) => {
               <div style={{ fontSize: '2em', flexShrink: 0 }}>{conv.avatar}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <h3 style={{ color: '#fff', margin: '0 0 4px 0', fontSize: 'clamp(0.9em, 3vw, 1.1em)' }}>{conv.name}</h3>
-                <p style={{ color: '#CBD5E1', margin: '0', fontSize: 'clamp(0.75em, 3vw, 0.85em)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{conv.lastMessage}</p>
-              </div>
-              <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                <p style={{ color: '#94A3B8', fontSize: '0.7em', margin: '0 0 6px 0' }}>{conv.timestamp}</p>
-                {conv.unread > 0 && (
-                  <div style={{ background: '#6366F1', color: '#fff', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75em', fontWeight: '600' }}>
-                    {conv.unread}
-                  </div>
-                )}
+                <p style={{ color: '#CBD5E1', margin: '0', fontSize: 'clamp(0.75em, 3vw, 0.85em)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Click to chat...</p>
               </div>
             </div>
           ))}
