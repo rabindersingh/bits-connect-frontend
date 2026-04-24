@@ -11,6 +11,7 @@ import ProfilePage from './pages/ProfilePage';
 import ModerationQueue from './pages/ModerationQueue';
 import AnnouncementsPage from './pages/AnnouncementsPage';
 import AnnouncementsSubmit from './pages/AnnouncementsSubmit';
+import CommunityGuidelines from './pages/CommunityGuidelines';
 
 import Navbar from './components/Navbar';
 
@@ -69,7 +70,7 @@ function App() {
             </>
           ) : !guidelinesAccepted ? (
             <>
-              <Route path="/guidelines" element={<AnnouncementsSubmit />} />
+              <Route path="/guidelines" element={<CommunityGuidelines onAgree={handleGuidelinesAccepted} />} />
               <Route path="*" element={<Navigate to="/guidelines" replace />} />
             </>
           ) : (
