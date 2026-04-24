@@ -10,7 +10,7 @@ import MessagesPage from './pages/MessagesPage';
 import ProfilePage from './pages/ProfilePage';
 import ModerationQueue from './pages/ModerationQueue';
 import AnnouncementsPage from './pages/AnnouncementsPage';
-import CommunityGuidelines from './pages/CommunityGuidelines';
+import AnnouncementsSubmit from './pages/AnnouncementsSubmit';
 
 import Navbar from './components/Navbar';
 
@@ -50,7 +50,6 @@ function App() {
     setIsLoggedIn(false);
     setIsAdmin(false);
     localStorage.removeItem('bitsUser');
-    // Keep guidelines accepted even after logout
   };
 
   const handleGuidelinesAccepted = () => {
@@ -70,15 +69,16 @@ function App() {
             </>
           ) : !guidelinesAccepted ? (
             <>
-              <Route path="/guidelines" element={<CommunityGuidelines onAgree={handleGuidelinesAccepted} />} />
+              <Route path="/guidelines" element={<AnnouncementsSubmit />} />
               <Route path="*" element={<Navigate to="/guidelines" replace />} />
             </>
           ) : (
             <>
               <Route path="/" element={<HomePage user={user} />} />
+              <Route path="/announcements" element={<AnnouncementsPage user={user} />} />
+              <Route path="/announcements/submit" element={<AnnouncementsSubmit user={user} />} />
               <Route path="/vibe-matcher" element={<VibeMatcher user={user} />} />
               <Route path="/messages" element={<MessagesPage user={user} />} />
-              <Route path="/announcements" element={<AnnouncementsPage user={user} />} />
               <Route path="/profile" element={<ProfilePage user={user} onLogout={handleLogout} />} />
               {isAdmin && (
                 <>

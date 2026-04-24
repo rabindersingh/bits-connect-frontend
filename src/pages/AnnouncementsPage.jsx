@@ -1,56 +1,41 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AnnouncementsPage = ({ user }) => {
+  const navigate = useNavigate();
   const [announcements] = useState([
     {
       id: 1,
-      title: '🎉 Welcome Party - Friday!',
-      description: 'Amazing party at campus lounge. Free food, music, great people!',
+      title: '🎉 Welcome Party - This Friday!',
+      description: 'Join us for an amazing welcome party at the campus lounge. Free food, music, and great people!',
       date: 'Friday, April 18',
       time: '7:00 PM',
       location: 'Campus Lounge',
       attendees: 156,
-      category: 'Party'
+      category: 'Party',
+      status: 'approved'
     },
     {
       id: 2,
-      title: '🎨 Design Workshop',
-      description: 'Learn UI/UX design with industry experts. Limited seats!',
+      title: '🎨 Design Workshop - Next Week',
+      description: 'Learn UI/UX design basics with industry experts. Limited seats available!',
       date: 'Monday, April 21',
       time: '3:00 PM',
       location: 'Design Studio',
       attendees: 45,
-      category: 'Workshop'
+      category: 'Workshop',
+      status: 'approved'
     },
     {
       id: 3,
-      title: '⚽ Sports Day - Sign Up!',
-      description: 'Cricket, basketball, badminton and more. Form your teams!',
+      title: '⚽ Sports Day - Sign Up Now!',
+      description: 'Cricket, basketball, badminton and more. Form your teams and compete!',
       date: 'Saturday, April 19',
       time: '9:00 AM',
       location: 'Sports Ground',
       attendees: 89,
-      category: 'Sports'
-    },
-    {
-      id: 4,
-      title: '🎤 Open Mic Night',
-      description: 'Poetry, music, comedy - all welcome. No experience needed!',
-      date: 'Saturday, April 19',
-      time: '8:00 PM',
-      location: 'Auditorium',
-      attendees: 203,
-      category: 'Event'
-    },
-    {
-      id: 5,
-      title: '📚 Study Groups',
-      description: 'Form study groups for different subjects. Connect with peers!',
-      date: 'Every day',
-      time: 'Anytime',
-      location: 'Library',
-      attendees: 312,
-      category: 'Academic'
+      category: 'Sports',
+      status: 'approved'
     }
   ]);
 
@@ -60,18 +45,28 @@ const AnnouncementsPage = ({ user }) => {
       Workshop: '#6366F1',
       Sports: '#14B8A6',
       Event: '#F59E0B',
-      Academic: '#0EA5E9'
+      Birthday: '#EC4899',
+      'Study Group': '#0EA5E9',
+      Club: '#8B5CF6',
+      Other: '#6B7280'
     };
     return colors[category] || '#6366F1';
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '15px' }}>
-      {/* Header */}
-      <div style={{ marginBottom: '20px' }}>
-        <h1 style={{ color: '#6366F1', fontSize: 'clamp(1.8em, 5vw, 2.5em)', margin: '0 0 8px 0' }}>📢 Announcements</h1>
-        <p style={{ color: '#CBD5E1', margin: '0', fontSize: 'clamp(0.85em, 3vw, 1em)' }}>Stay updated with events</p>
+    <div style={{ maxWidth: '100%', margin: '0', padding: '15px', boxSizing: 'border-box' }}>
+      {/* Header with Submit Button */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
+        <h1 style={{ color: '#6366F1', fontSize: 'clamp(1.5em, 5vw, 2.5em)', margin: '0' }}>📢 Announcements</h1>
+        <button 
+          onClick={() => navigate('/announcements/submit')}
+          style={{ background: '#6366F1', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: 'clamp(0.85em, 3vw, 1em)', whiteSpace: 'nowrap' }}
+        >
+          + Post Event
+        </button>
       </div>
+
+      <p style={{ color: '#CBD5E1', margin: '0 0 20px 0', fontSize: 'clamp(0.85em, 3vw, 1em)' }}>Stay updated with campus events and activities</p>
 
       {/* Announcements List */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -145,10 +140,10 @@ const AnnouncementsPage = ({ user }) => {
         ))}
       </div>
 
-      {/* Empty State Message */}
+      {/* Info Box */}
       <div style={{ background: 'rgba(20,184,166,0.1)', border: '2px solid #14B8A6', borderRadius: '12px', padding: '15px', marginTop: '20px', textAlign: 'center' }}>
-        <p style={{ color: '#14B8A6', fontWeight: '600', margin: '0 0 6px 0', fontSize: 'clamp(0.85em, 3vw, 0.95em)' }}>Don't miss out!</p>
-        <p style={{ color: '#CBD5E1', fontSize: 'clamp(0.8em, 3vw, 0.9em)', margin: '0' }}>Check regularly for new events</p>
+        <p style={{ color: '#14B8A6', fontWeight: '600', margin: '0 0 8px 0' }}>📢 Have an event to share?</p>
+        <p style={{ color: '#CBD5E1', fontSize: '0.9em', margin: '0' }}>Click "Post Event" above to create an announcement!</p>
       </div>
     </div>
   );
