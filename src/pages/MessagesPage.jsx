@@ -25,7 +25,7 @@ const MessagesPage = ({ user }) => {
     setLoading(true);
     try {
       const senderId = 1; // Mock user ID (in real app, get from auth)
-      const response = await fetch(`https://bits-connect-backend-production.up.railway.app/api/messages/${senderId}/${receiverId}`);
+      const response = await fetch(`/api/messages/${senderId}/${receiverId}`);
       const data = await response.json();
       
       if (data.success) {
@@ -54,7 +54,7 @@ const MessagesPage = ({ user }) => {
       const senderId = 1; // Mock user ID
       const receiverId = selectedConv.userId;
       
-      const response = await fetch('https://bits-connect-backend-production.up.railway.app/api/messages', {
+      const response = await fetch('/api/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -92,7 +92,7 @@ const MessagesPage = ({ user }) => {
     if (!selectedConv) return;
 
     try {
-      const response = await fetch(`https://bits-connect-backend-production.up.railway.app/api/messages/${messageId}/emoji`, {
+      const response = await fetch(`/api/messages/${messageId}/emoji`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ emoji })
