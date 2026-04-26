@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 const MessagesPage = ({ user }) => {
   const [selectedConv, setSelectedConv] = useState(null);
-  const [conversations, setConversations] = useState([
+  const [conversations] = useState([
     { id: 1, name: 'Alex Kumar', avatar: '👨‍💻', userId: 1 },
     { id: 2, name: 'Jordan Patel', avatar: '🎨', userId: 2 },
     { id: 3, name: 'Casey Singh', avatar: '💼', userId: 3 }
@@ -14,23 +14,16 @@ const MessagesPage = ({ user }) => {
 
   const validEmojis = ['❤️', '👍', '😊', '😢', '😠', '🎉', '😴', '🤔', '🎊', '📚', '🍕', '💪'];
 
-  // Fetch messages when conversation is selected
-  useEffect(() => {
-    if (selectedConv) {
-      fetchMessages(selectedConv.userId);
-    }
-  }, [selectedConv]);
-
-  const fetchMessages = async (receiverId) => {
+  const fetchMessages = useCallback(async (receiverId) => {
     setLoading(true);
     try {
-      const senderId = 1; // Mock user ID (in real app, get from auth)
+      const senderId = 1;
       const response = await fetch(`/api/messages/${senderId}/${receiverId}`);
       const data = await response.json();
       
       if (data.success) {
-        setMessages({
-          ...messages,
+        setMessages(prev => ({
+          ...prev,
           [receiverId]: data.messages.map(msg => ({
             id: msg.id,
             from: msg.sender_id === senderId ? 'You' : selectedConv.name,
@@ -39,19 +32,25 @@ const MessagesPage = ({ user }) => {
             isUser: msg.sender_id === senderId,
             emoji: msg.emoji_reaction
           }))
-        });
+        }));
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
     }
     setLoading(false);
-  };
+  }, [selectedConv]);
+
+  useEffect(() => {
+    if (selectedConv) {
+      fetchMessages(selectedConv.userId);
+    }
+  }, [selectedConv, fetchMessages]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedConv) return;
 
     try {
-      const senderId = 1; // Mock user ID
+      const senderId = 1;
       const receiverId = selectedConv.userId;
       
       const response = await fetch('/api/messages', {
@@ -67,10 +66,9 @@ const MessagesPage = ({ user }) => {
       const data = await response.json();
       
       if (data.success) {
-        // Add message to state
         const convMessages = messages[receiverId] || [];
-        setMessages({
-          ...messages,
+        setMessages(prev => ({
+          ...prev,
           [receiverId]: [...convMessages, {
             id: data.message.id,
             from: 'You',
@@ -79,7 +77,7 @@ const MessagesPage = ({ user }) => {
             isUser: true,
             emoji: null
           }]
-        });
+        }));
         setNewMessage('');
       }
     } catch (error) {
@@ -101,15 +99,13 @@ const MessagesPage = ({ user }) => {
       const data = await response.json();
       
       if (data.success) {
-        // Update message with emoji
         const receiverId = selectedConv.userId;
-        const updatedMessages = messages[receiverId].map(msg => 
-          msg.id === messageId ? { ...msg, emoji } : msg
-        );
-        setMessages({
-          ...messages,
-          [receiverId]: updatedMessages
-        });
+        setMessages(prev => ({
+          ...prev,
+          [receiverId]: prev[receiverId].map(msg => 
+            msg.id === messageId ? { ...msg, emoji } : msg
+          )
+        }));
       }
     } catch (error) {
       console.error('Error adding emoji:', error);
