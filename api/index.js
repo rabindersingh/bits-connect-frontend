@@ -7,7 +7,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Database connection
+console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'SET' : 'NOT SET');
+
+// Database connection - MUST use DATABASE_URL
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL
 });
@@ -105,5 +107,4 @@ app.get('/api/admin/crisis-alerts', (req, res) => {
   res.json({ success: true, alerts: [{ id: 1, content: 'Crisis alert' }] });
 });
 
-// Export for Vercel
 module.exports = app;
