@@ -7,20 +7,21 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Database connection with SSL
+// Parse DATABASE_URL properly
+const connectionString = process.env.DATABASE_URL;
+console.log('Connecting to database...');
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  connectionString: connectionString,
+  application_name: 'bits-connect'
 });
 
-// Test database connection
+// Test connection
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
-    console.error('❌ Database connection failed:', err.message);
+    console.error('❌ DB Error:', err.message);
   } else {
-    console.log('✅ Database connected');
+    console.log('✅ DB Connected');
   }
 });
 
@@ -29,13 +30,13 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', database: 'connected', message: 'BITS Connect Backend is running!' });
 });
 
-// Get all messages between two users
+// Get messages
 app.get('/api/messages/:senderId/:receiverId', (req, res) => {
   const { senderId, receiverId } = req.params;
   
   pool.query(
     'SELECT * FROM messages WHERE (sender_id = $1 AND receiver_id = $2) OR (sender_id = $2 AND receiver_id = $1) ORDER BY created_at ASC',
-    [senderId, receiverId],
+    [parseInt(senderId), parseInt(receiverId)],
     (err, result) => {
       if (err) {
         res.status(500).json({ success: false, error: err.message });
@@ -46,12 +47,12 @@ app.get('/api/messages/:senderId/:receiverId', (req, res) => {
   );
 });
 
-// Send a message
+// Send message
 app.post('/api/messages', (req, res) => {
   const { sender_id, receiver_id, text } = req.body;
 
   if (!sender_id || !receiver_id || !text) {
-    return res.status(400).json({ success: false, error: 'Missing required fields' });
+    return res.status(400).json({ success: false, error: 'Missing fields' });
   }
 
   pool.query(
@@ -67,7 +68,7 @@ app.post('/api/messages', (req, res) => {
   );
 });
 
-// Add emoji reaction to message
+// Emoji reaction
 app.put('/api/messages/:messageId/emoji', (req, res) => {
   const { messageId } = req.params;
   const { emoji } = req.body;
@@ -80,7 +81,7 @@ app.put('/api/messages/:messageId/emoji', (req, res) => {
 
   pool.query(
     'UPDATE messages SET emoji_reaction = $1 WHERE id = $2 RETURNING *',
-    [emoji, messageId],
+    [emoji, parseInt(messageId)],
     (err, result) => {
       if (err) {
         res.status(500).json({ success: false, error: err.message });
@@ -97,7 +98,7 @@ app.get('/api/admin/stats', (req, res) => {
 });
 
 app.get('/api/admin/queue', (req, res) => {
-  res.json({ success: true, data: { pending: [{ id: 1, content: 'Test confession' }] } });
+  res.json({ success: true, data: { pending: [{ id: 1, content: 'Test' }] } });
 });
 
 app.get('/api/admin/confessions', (req, res) => {
@@ -105,7 +106,7 @@ app.get('/api/admin/confessions', (req, res) => {
 });
 
 app.get('/api/admin/crisis-alerts', (req, res) => {
-  res.json({ success: true, alerts: [{ id: 1, content: 'Crisis alert' }] });
+  res.json({ success: true, alerts: [{ id: 1, content: 'Alert' }] });
 });
 
 module.exports = app;
