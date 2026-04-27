@@ -11,6 +11,7 @@ const MessagesPage = ({ user }) => {
   const [messages, setMessages] = useState({});
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [hoveredMessageId, setHoveredMessageId] = useState(null);
 
   const validEmojis = ['❤️', '👍', '😊', '😢', '😠', '🎉', '😴', '🤔', '🎊', '📚', '🍕', '💪'];
 
@@ -134,34 +135,56 @@ const MessagesPage = ({ user }) => {
             <p style={{ color: '#CBD5E1', textAlign: 'center' }}>No messages yet. Start the conversation!</p>
           ) : (
             convMessages.map((msg) => (
-              <div key={msg.id} style={{ marginBottom: '12px', display: 'flex', justifyContent: msg.isUser ? 'flex-end' : 'flex-start' }}>
-                <div style={{ background: msg.isUser ? '#6366F1' : 'rgba(99,102,241,0.2)', color: msg.isUser ? '#fff' : '#CBD5E1', padding: '10px 12px', borderRadius: '10px', maxWidth: '75%', wordWrap: 'break-word' }}>
-                  <p style={{ margin: '0 0 4px 0', fontSize: 'clamp(0.8em, 3vw, 0.9em)' }}>{msg.text}</p>
-                  <p style={{ margin: '0 0 8px 0', fontSize: '0.65em', opacity: 0.7 }}>{msg.time}</p>
-                  
-                  {/* Emoji reactions */}
-                  <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                    {validEmojis.map(emoji => (
-                      <button
-                        key={emoji}
-                        onClick={() => handleEmojiReaction(msg.id, emoji)}
-                        style={{
-                          background: msg.emoji === emoji ? 'rgba(255,255,255,0.3)' : 'transparent',
-                          border: '1px solid rgba(255,255,255,0.2)',
-                          color: '#fff',
-                          padding: '2px 6px',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '0.9em',
-                          transition: 'all 0.2s'
-                        }}
-                      >
-                        {emoji}
-                      </button>
-                    ))}
+              <div key={msg.id} style={{ marginBottom: '20px', display: 'flex', justifyContent: msg.isUser ? 'flex-end' : 'flex-start' }}>
+                <div 
+                  style={{ maxWidth: '75%' }}
+                  onMouseEnter={() => setHoveredMessageId(msg.id)}
+                  onMouseLeave={() => setHoveredMessageId(null)}
+                >
+                  {/* Message bubble */}
+                  <div style={{ background: msg.isUser ? '#6366F1' : 'rgba(99,102,241,0.2)', color: msg.isUser ? '#fff' : '#CBD5E1', padding: '10px 12px', borderRadius: '10px', wordWrap: 'break-word' }}>
+                    <p style={{ margin: '0 0 4px 0', fontSize: 'clamp(0.8em, 3vw, 0.9em)' }}>{msg.text}</p>
+                    <p style={{ margin: '0', fontSize: '0.65em', opacity: 0.7 }}>{msg.time}</p>
                   </div>
-                  
-                  {msg.emoji && <p style={{ margin: '4px 0 0 0', fontSize: '0.85em' }}>Reacted: {msg.emoji}</p>}
+
+                  {/* Emoji reactions - show on hover or if reaction exists */}
+                  {(hoveredMessageId === msg.id || msg.emoji) && (
+                    <div style={{ 
+                      display: 'flex', 
+                      gap: '4px', 
+                      flexWrap: 'wrap', 
+                      marginTop: '8px',
+                      padding: '8px',
+                      background: 'rgba(99,102,241,0.1)',
+                      borderRadius: '8px'
+                    }}>
+                      {validEmojis.map(emoji => (
+                        <button
+                          key={emoji}
+                          onClick={() => handleEmojiReaction(msg.id, emoji)}
+                          style={{
+                            background: msg.emoji === emoji ? '#6366F1' : 'transparent',
+                            border: msg.emoji === emoji ? '2px solid #fff' : '1px solid rgba(255,255,255,0.3)',
+                            color: '#fff',
+                            padding: '6px 8px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '1em',
+                            transition: 'all 0.2s',
+                            fontWeight: msg.emoji === emoji ? '600' : '400'
+                          }}
+                          title={emoji}
+                        >
+                          {emoji}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Show current reaction */}
+                  {msg.emoji && (
+                    <p style={{ margin: '6px 0 0 0', fontSize: '0.85em', color: '#0EA5E9' }}>Reacted: {msg.emoji}</p>
+                  )}
                 </div>
               </div>
             ))
