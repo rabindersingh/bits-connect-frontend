@@ -1,29 +1,19 @@
 const express = require('express');
-const { Pool } = require('pg');
 const cors = require('cors');
-require('dotenv').config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Parse DATABASE_URL properly
-const connectionString = process.env.DATABASE_URL;
-console.log('Connecting to database...');
-
-const pool = new Pool({
-  connectionString: connectionString,
-  application_name: 'bits-connect'
-});
-
-// Test connection
-pool.query('SELECT NOW()', (err, res) => {
-  if (err) {
-    console.error('❌ DB Error:', err.message);
-  } else {
-    console.log('✅ DB Connected');
-  }
-});
+// Mock data for testing
+const mockMessages = {
+  "1_2": [
+    { id: 1, sender_id: 1, receiver_id: 2, text: "Hey! How are you?", emoji_reaction: null, created_at: new Date() },
+    { id: 2, sender_id: 2, receiver_id: 1, text: "I'm good! You?", emoji_reaction: null, created_at: new Date() }
+  ],
+  "1_3": [],
+  "2_3": []
+};
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -33,18 +23,9 @@ app.get('/api/health', (req, res) => {
 // Get messages
 app.get('/api/messages/:senderId/:receiverId', (req, res) => {
   const { senderId, receiverId } = req.params;
+  const key = `${senderId}_${receiverId}`;
   
-  pool.query(
-    'SELECT * FROM messages WHERE (sender_id = $1 AND receiver_id = $2) OR (sender_id = $2 AND receiver_id = $1) ORDER BY created_at ASC',
-    [parseInt(senderId), parseInt(receiverId)],
-    (err, result) => {
-      if (err) {
-        res.status(500).json({ success: false, error: err.message });
-      } else {
-        res.json({ success: true, messages: result.rows });
-      }
-    }
-  );
+  res.json({ success: true, messages: mockMessages[key] || [] });
 });
 
 // Send message
@@ -55,17 +36,22 @@ app.post('/api/messages', (req, res) => {
     return res.status(400).json({ success: false, error: 'Missing fields' });
   }
 
-  pool.query(
-    'INSERT INTO messages (sender_id, receiver_id, text) VALUES ($1, $2, $3) RETURNING *',
-    [sender_id, receiver_id, text],
-    (err, result) => {
-      if (err) {
-        res.status(500).json({ success: false, error: err.message });
-      } else {
-        res.json({ success: true, message: result.rows[0] });
-      }
-    }
-  );
+  const key = `${sender_id}_${receiver_id}`;
+  if (!mockMessages[key]) {
+    mockMessages[key] = [];
+  }
+
+  const newMsg = {
+    id: Date.now(),
+    sender_id,
+    receiver_id,
+    text,
+    emoji_reaction: null,
+    created_at: new Date()
+  };
+
+  mockMessages[key].push(newMsg);
+  res.json({ success: true, message: newMsg });
 });
 
 // Emoji reaction
@@ -79,17 +65,7 @@ app.put('/api/messages/:messageId/emoji', (req, res) => {
     return res.status(400).json({ success: false, error: 'Invalid emoji' });
   }
 
-  pool.query(
-    'UPDATE messages SET emoji_reaction = $1 WHERE id = $2 RETURNING *',
-    [emoji, parseInt(messageId)],
-    (err, result) => {
-      if (err) {
-        res.status(500).json({ success: false, error: err.message });
-      } else {
-        res.json({ success: true, message: result.rows[0] });
-      }
-    }
-  );
+  res.json({ success: true, message: { id: messageId, emoji_reaction: emoji } });
 });
 
 // Admin endpoints
