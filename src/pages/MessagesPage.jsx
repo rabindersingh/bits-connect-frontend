@@ -13,12 +13,11 @@ const MessagesPage = ({ user }) => {
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [hoveredMessageId, setHoveredMessageId] = useState(null);
-  const subscriptionRef = useRef(null);
+  const pollingIntervalRef = useRef(null);
 
   const validEmojis = ['❤️', '👍', '😊', '😢', '😠', '🎉', '😴', '🤔', '🎊', '📚', '🍕', '💪'];
 
   const fetchMessages = useCallback(async (receiverId) => {
-    setLoading(true);
     try {
       const senderId = 1;
       const { data, error } = await supabase
@@ -30,7 +29,6 @@ const MessagesPage = ({ user }) => {
       if (error) {
         console.error('Error fetching messages:', error);
       } else {
-        console.log('Messages fetched:', data);
         setMessages(prev => ({
           ...prev,
           [receiverId]: data.map(msg => ({
@@ -46,41 +44,24 @@ const MessagesPage = ({ user }) => {
     } catch (error) {
       console.error('Error fetching messages:', error);
     }
-    setLoading(false);
   }, [selectedConv?.name]);
 
   useEffect(() => {
     if (selectedConv) {
+      // Fetch messages immediately
       fetchMessages(selectedConv.userId);
       
-      // Subscribe to real-time updates
-      subscriptionRef.current = supabase
-        .from('messages')
-        .on('*', (payload) => {
-          console.log('Real-time event:', payload);
-          fetchMessages(selectedConv.userId);
-        })
-        .subscribe();
+      // Poll every 1 second for new messages and emoji updates
+      pollingIntervalRef.current = setInterval(() => {
+        fetchMessages(selectedConv.userId);
+      }, 1000);
 
       return () => {
-        if (subscriptionRef.current) {
-          subscriptionRef.current.unsubscribe();
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current);
         }
       };
     }
-  }, [selectedConv, fetchMessages]);
-
-  // Refresh messages when window comes back to focus
-  useEffect(() => {
-    const handleFocus = () => {
-      if (selectedConv) {
-        console.log('Window focused - refreshing messages');
-        fetchMessages(selectedConv.userId);
-      }
-    };
-
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
   }, [selectedConv, fetchMessages]);
 
   const handleSendMessage = async () => {
@@ -104,9 +85,9 @@ const MessagesPage = ({ user }) => {
         console.error('Error sending message:', error);
         alert('Failed to send message');
       } else {
-        console.log('Message sent:', data);
         setNewMessage('');
-        fetchMessages(receiverId);
+        // Fetch immediately after sending
+        setTimeout(() => fetchMessages(receiverId), 500);
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -118,17 +99,16 @@ const MessagesPage = ({ user }) => {
     if (!selectedConv) return;
 
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('messages')
         .update({ emoji_reaction: emoji })
-        .eq('id', messageId)
-        .select();
+        .eq('id', messageId);
 
       if (error) {
         console.error('Error adding emoji:', error);
       } else {
-        console.log('Emoji updated:', data);
-        fetchMessages(selectedConv.userId);
+        // Fetch immediately after emoji update
+        setTimeout(() => fetchMessages(selectedConv.userId), 300);
       }
     } catch (error) {
       console.error('Error adding emoji:', error);
@@ -151,9 +131,7 @@ const MessagesPage = ({ user }) => {
 
         {/* Messages Area */}
         <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', padding: '15px', marginBottom: '15px', minHeight: '250px', maxHeight: '350px', overflowY: 'auto', flex: 1 }}>
-          {loading ? (
-            <p style={{ color: '#CBD5E1', textAlign: 'center' }}>Loading messages...</p>
-          ) : convMessages.length === 0 ? (
+          {convMessages.length === 0 ? (
             <p style={{ color: '#CBD5E1', textAlign: 'center' }}>No messages yet. Start the conversation!</p>
           ) : (
             convMessages.map((msg) => (
