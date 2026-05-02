@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../supabaseClient';
 
 const MessagesPage = ({ user }) => {
@@ -13,6 +13,7 @@ const MessagesPage = ({ user }) => {
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [hoveredMessageId, setHoveredMessageId] = useState(null);
+  const subscriptionRef = useRef(null);
 
   const validEmojis = ['❤️', '👍', '😊', '😢', '😠', '🎉', '😴', '🤔', '🎊', '📚', '🍕', '💪'];
 
@@ -33,7 +34,7 @@ const MessagesPage = ({ user }) => {
           ...prev,
           [receiverId]: data.map(msg => ({
             id: msg.id,
-            from: msg.sender_id === senderId ? 'You' : selectedConv.name,
+            from: msg.sender_id === senderId ? 'You' : selectedConv?.name,
             text: msg.text,
             time: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             isUser: msg.sender_id === senderId,
@@ -45,25 +46,38 @@ const MessagesPage = ({ user }) => {
       console.error('Error fetching messages:', error);
     }
     setLoading(false);
-  }, [selectedConv]);
+  }, [selectedConv?.name]);
 
   useEffect(() => {
     if (selectedConv) {
       fetchMessages(selectedConv.userId);
       
       // Subscribe to real-time updates
-      const subscription = supabase
+      subscriptionRef.current = supabase
         .from('messages')
-        .on('*', payload => {
-          console.log('Real-time update:', payload);
+        .on('*', () => {
           fetchMessages(selectedConv.userId);
         })
         .subscribe();
 
       return () => {
-        subscription.unsubscribe();
+        if (subscriptionRef.current) {
+          subscriptionRef.current.unsubscribe();
+        }
       };
     }
+  }, [selectedConv, fetchMessages]);
+
+  // Refresh messages when window comes back to focus
+  useEffect(() => {
+    const handleFocus = () => {
+      if (selectedConv) {
+        fetchMessages(selectedConv.userId);
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
   }, [selectedConv, fetchMessages]);
 
   const handleSendMessage = async () => {
