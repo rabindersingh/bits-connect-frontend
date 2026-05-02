@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { supabase } from '../supabaseClient';
 
 const MessagesPage = ({ user }) => {
   const [selectedConv, setSelectedConv] = useState(null);
@@ -19,13 +20,18 @@ const MessagesPage = ({ user }) => {
     setLoading(true);
     try {
       const senderId = 1;
-      const response = await fetch(`/api/messages/${senderId}/${receiverId}`);
-      const data = await response.json();
-      
-      if (data.success) {
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .or(`and(sender_id.eq.${senderId},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${senderId})`)
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching messages:', error);
+      } else {
         setMessages(prev => ({
           ...prev,
-          [receiverId]: data.messages.map(msg => ({
+          [receiverId]: data.map(msg => ({
             id: msg.id,
             from: msg.sender_id === senderId ? 'You' : selectedConv.name,
             text: msg.text,
@@ -44,6 +50,19 @@ const MessagesPage = ({ user }) => {
   useEffect(() => {
     if (selectedConv) {
       fetchMessages(selectedConv.userId);
+      
+      // Subscribe to real-time updates
+      const subscription = supabase
+        .from('messages')
+        .on('*', payload => {
+          console.log('Real-time update:', payload);
+          fetchMessages(selectedConv.userId);
+        })
+        .subscribe();
+
+      return () => {
+        subscription.unsubscribe();
+      };
     }
   }, [selectedConv, fetchMessages]);
 
@@ -54,32 +73,21 @@ const MessagesPage = ({ user }) => {
       const senderId = 1;
       const receiverId = selectedConv.userId;
       
-      const response = await fetch('/api/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const { data, error } = await supabase
+        .from('messages')
+        .insert([{
           sender_id: senderId,
           receiver_id: receiverId,
           text: newMessage
-        })
-      });
+        }])
+        .select();
 
-      const data = await response.json();
-      
-      if (data.success) {
-        const convMessages = messages[receiverId] || [];
-        setMessages(prev => ({
-          ...prev,
-          [receiverId]: [...convMessages, {
-            id: data.message.id,
-            from: 'You',
-            text: newMessage,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            isUser: true,
-            emoji: null
-          }]
-        }));
+      if (error) {
+        console.error('Error sending message:', error);
+        alert('Failed to send message');
+      } else {
         setNewMessage('');
+        fetchMessages(receiverId);
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -91,22 +99,15 @@ const MessagesPage = ({ user }) => {
     if (!selectedConv) return;
 
     try {
-      const response = await fetch(`/api/messages/${messageId}/emoji`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ emoji })
-      });
+      const { error } = await supabase
+        .from('messages')
+        .update({ emoji_reaction: emoji })
+        .eq('id', messageId);
 
-      const data = await response.json();
-      
-      if (data.success) {
-        const receiverId = selectedConv.userId;
-        setMessages(prev => ({
-          ...prev,
-          [receiverId]: prev[receiverId].map(msg => 
-            msg.id === messageId ? { ...msg, emoji } : msg
-          )
-        }));
+      if (error) {
+        console.error('Error adding emoji:', error);
+      } else {
+        fetchMessages(selectedConv.userId);
       }
     } catch (error) {
       console.error('Error adding emoji:', error);
@@ -147,7 +148,7 @@ const MessagesPage = ({ user }) => {
                     <p style={{ margin: '0', fontSize: '0.65em', opacity: 0.7 }}>{msg.time}</p>
                   </div>
 
-                  {/* Emoji reactions - show on hover or if reaction exists */}
+                  {/* Emoji reactions */}
                   {(hoveredMessageId === msg.id || msg.emoji) && (
                     <div style={{ 
                       display: 'flex', 
@@ -181,7 +182,6 @@ const MessagesPage = ({ user }) => {
                     </div>
                   )}
 
-                  {/* Show current reaction */}
                   {msg.emoji && (
                     <p style={{ margin: '6px 0 0 0', fontSize: '0.85em', color: '#0EA5E9' }}>Reacted: {msg.emoji}</p>
                   )}
