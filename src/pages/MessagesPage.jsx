@@ -30,6 +30,7 @@ const MessagesPage = ({ user }) => {
       if (error) {
         console.error('Error fetching messages:', error);
       } else {
+        console.log('Messages fetched:', data);
         setMessages(prev => ({
           ...prev,
           [receiverId]: data.map(msg => ({
@@ -55,7 +56,8 @@ const MessagesPage = ({ user }) => {
       // Subscribe to real-time updates
       subscriptionRef.current = supabase
         .from('messages')
-        .on('*', () => {
+        .on('*', (payload) => {
+          console.log('Real-time event:', payload);
           fetchMessages(selectedConv.userId);
         })
         .subscribe();
@@ -72,6 +74,7 @@ const MessagesPage = ({ user }) => {
   useEffect(() => {
     const handleFocus = () => {
       if (selectedConv) {
+        console.log('Window focused - refreshing messages');
         fetchMessages(selectedConv.userId);
       }
     };
@@ -92,7 +95,8 @@ const MessagesPage = ({ user }) => {
         .insert([{
           sender_id: senderId,
           receiver_id: receiverId,
-          text: newMessage
+          text: newMessage,
+          emoji_reaction: null
         }])
         .select();
 
@@ -100,6 +104,7 @@ const MessagesPage = ({ user }) => {
         console.error('Error sending message:', error);
         alert('Failed to send message');
       } else {
+        console.log('Message sent:', data);
         setNewMessage('');
         fetchMessages(receiverId);
       }
@@ -113,14 +118,16 @@ const MessagesPage = ({ user }) => {
     if (!selectedConv) return;
 
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('messages')
         .update({ emoji_reaction: emoji })
-        .eq('id', messageId);
+        .eq('id', messageId)
+        .select();
 
       if (error) {
         console.error('Error adding emoji:', error);
       } else {
+        console.log('Emoji updated:', data);
         fetchMessages(selectedConv.userId);
       }
     } catch (error) {
