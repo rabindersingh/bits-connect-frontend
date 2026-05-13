@@ -11,7 +11,6 @@ const MessagesPage = ({ user }) => {
 
   const [messages, setMessages] = useState({});
   const [newMessage, setNewMessage] = useState('');
-  const [loading, setLoading] = useState(false);
   const [hoveredMessageId, setHoveredMessageId] = useState(null);
   const pollingIntervalRef = useRef(null);
 
@@ -27,8 +26,9 @@ const MessagesPage = ({ user }) => {
         .order('created_at', { ascending: true });
 
       if (error) {
-        console.error('Error fetching messages:', error);
+        console.error('Fetch error:', error);
       } else {
+        console.log('Messages fetched:', data.length);
         setMessages(prev => ({
           ...prev,
           [receiverId]: data.map(msg => ({
@@ -42,16 +42,13 @@ const MessagesPage = ({ user }) => {
         }));
       }
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      console.error('Fetch exception:', error);
     }
   }, [selectedConv?.name]);
 
   useEffect(() => {
     if (selectedConv) {
-      // Fetch messages immediately
       fetchMessages(selectedConv.userId);
-      
-      // Poll every 1 second for new messages and emoji updates
       pollingIntervalRef.current = setInterval(() => {
         fetchMessages(selectedConv.userId);
       }, 1000);
@@ -71,6 +68,8 @@ const MessagesPage = ({ user }) => {
       const senderId = 1;
       const receiverId = selectedConv.userId;
       
+      console.log('Sending message:', { senderId, receiverId, text: newMessage });
+
       const { data, error } = await supabase
         .from('messages')
         .insert([{
@@ -82,16 +81,16 @@ const MessagesPage = ({ user }) => {
         .select();
 
       if (error) {
-        console.error('Error sending message:', error);
-        alert('Failed to send message');
+        console.error('Insert error:', error);
+        alert('Error: ' + error.message);
       } else {
+        console.log('Message inserted:', data);
         setNewMessage('');
-        // Fetch immediately after sending
         setTimeout(() => fetchMessages(receiverId), 500);
       }
     } catch (error) {
-      console.error('Error sending message:', error);
-      alert('Failed to send message');
+      console.error('Send exception:', error);
+      alert('Exception: ' + error.message);
     }
   };
 
@@ -105,13 +104,13 @@ const MessagesPage = ({ user }) => {
         .eq('id', messageId);
 
       if (error) {
-        console.error('Error adding emoji:', error);
+        console.error('Emoji error:', error);
       } else {
-        // Fetch immediately after emoji update
+        console.log('Emoji updated:', messageId);
         setTimeout(() => fetchMessages(selectedConv.userId), 300);
       }
     } catch (error) {
-      console.error('Error adding emoji:', error);
+      console.error('Emoji exception:', error);
     }
   };
 
